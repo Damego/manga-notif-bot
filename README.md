@@ -1,0 +1,2 @@
+# manga-notif-bot
+ 
