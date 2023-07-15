@@ -3,7 +3,6 @@ from typing import Callable
 
 from telegram.ext.filters import BaseFilter
 
-from .base import HandlerObject
 from .handlers import CallbackQuery, Command, Message, Startup
 from inner_types import AsyncCallable
 
@@ -37,18 +36,5 @@ def message(filters: BaseFilter) -> Callable[..., Message]:
 def callback_query(pattern: str | Pattern[str]) -> Callable[..., CallbackQuery]:
     def wrapper(coro: AsyncCallable) -> CallbackQuery:
         return CallbackQuery(coro=coro, pattern=pattern)
-
-    return wrapper
-
-
-class State:
-    def __init__(self, name: str, handler: HandlerObject):
-        self.name = name
-        self.handler = handler
-
-
-def state(name: str):
-    def wrapper(handler: HandlerObject):
-        return State(name, handler)
 
     return wrapper
