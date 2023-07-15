@@ -4,6 +4,15 @@ from handlers.base import HandlerObject
 
 
 class Conversation:
+    class States:
+        END = ConversationHandler.END
+        TIMEOUT = ConversationHandler.TIMEOUT
+        WAITING = ConversationHandler.WAITING
+
+        @classmethod
+        def generate_state(cls, length: int):
+            return map(str, range(length))
+
     def __init__(self):
         self._entry_points: list = []
         self._states: dict[str, list[HandlerObject]] = {}
