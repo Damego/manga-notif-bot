@@ -50,11 +50,16 @@ class ReadManga:
 
     def parse_title_page(self, html: str):
         soup = BeautifulSoup(html, "html.parser")
-        raw_data = soup.find("a", "read-last-chapter").text.strip().split()
-        name = soup.find("h1", "names").find("span", "name")
+        raw_data = soup.find("a", "read-last-chapter")
+
+        if not raw_data:
+            return
+
+        data = raw_data.text.strip().split()
+        name = soup.find("h1", "names").find("span", "name").text
 
         return {
             "name": name,
-            "volume": raw_data[1],
-            "chapter": raw_data[3]
+            "volume": data[1],
+            "chapter": data[3]
         }
