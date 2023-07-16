@@ -8,7 +8,7 @@ packages = [{include = "manga_notif_bot"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-python-telegram-bot = "^20.4"
+python-telegram-bot = {extras = ["job-queue"], version = "^20.4"}
 python-dotenv = "^1.0.0"
 beautifulsoup4 = "^4.12.2"
 beanie = "^1.20.0"

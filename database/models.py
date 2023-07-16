@@ -1,4 +1,5 @@
 from enum import IntEnum
+from typing import List
 
 from beanie import Document, Link
 
@@ -13,9 +14,10 @@ class Manga(Document):
     type: SiteType
     name: str
     urn: str
-    chapter: str
+    volume: int
+    chapter: int
 
 
-class User(Document):
+class TelegramChat(Document):
     id: str
-    subscriptions: list[Link[Manga]]
+    subscriptions: List[Link[Manga]]

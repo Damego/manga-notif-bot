@@ -24,6 +24,10 @@ class Client:
     def bot(self) -> Bot:
         return self.app.bot
 
+    @property
+    def job_queue(self):
+        return self.app.job_queue
+
     def __register_handlers(self):
         self._handlers = [
             handler
@@ -48,7 +52,9 @@ class Client:
         ]
 
         conversation_handlers = [
-            conv.as_handler() for conv in self._handlers if isinstance(conv, Conversation)
+            conv.as_handler()
+            for conv in self._handlers
+            if isinstance(conv, Conversation)
         ]
         print(conversation_handlers[0].states["1"][0].callback)
         self.app.add_handlers(conversation_handlers)
