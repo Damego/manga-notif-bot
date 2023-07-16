@@ -9,7 +9,9 @@ from inner_types import AsyncCallable
 
 
 class Command(HandlerObject):
-    def __init__(self, *, name: str, description: str, register: bool, coro: AsyncCallable):
+    def __init__(
+        self, *, name: str, description: str, register: bool, coro: AsyncCallable
+    ):
         super().__init__(coro)
 
         self.handler = CommandHandler(name, coro)

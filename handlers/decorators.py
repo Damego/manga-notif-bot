@@ -21,7 +21,12 @@ def command(
     name: str = None, description: str = "No description set.", register: bool = True
 ) -> Callable[..., Command]:
     def wrapper(coro: AsyncCallable) -> Command:
-        return Command(name=name or coro.__name__, description=description, register=register, coro=coro)
+        return Command(
+            name=name or coro.__name__,
+            description=description,
+            register=register,
+            coro=coro,
+        )
 
     return wrapper
 

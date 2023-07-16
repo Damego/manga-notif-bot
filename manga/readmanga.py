@@ -1,3 +1,5 @@
+# TODO: Run parsing in thread
+
 from httpx import AsyncClient
 from bs4 import BeautifulSoup, Tag
 
@@ -8,9 +10,7 @@ SEARCH_URL = f"{BASE_URL}/search"
 class ReadManga:
     def __init__(self):
         self.client = AsyncClient(
-            headers={
-                "User-Agent": "MangaNotification Telegram Bot"
-            }
+            headers={"User-Agent": "MangaNotification Telegram Bot"}
         )
 
     async def search(self, query: str):
@@ -35,12 +35,7 @@ class ReadManga:
         for tile_element in tiles_elements:
             info: Tag = tile_element.find("div", "desc").find("h3").find("a")
 
-            tiles.append(
-                {
-                    "name": info.get("title"),
-                    "url": info.get("href")
-                }
-            )
+            tiles.append({"name": info.get("title"), "url": info.get("href")})
 
         return tiles
 
@@ -58,8 +53,4 @@ class ReadManga:
         data = raw_data.text.strip().split()
         name = soup.find("h1", "names").find("span", "name").text
 
-        return {
-            "name": name,
-            "volume": data[1],
-            "chapter": data[3]
-        }
+        return {"name": name, "volume": int(data[1]), "chapter": int(data[3])}
