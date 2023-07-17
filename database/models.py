@@ -1,13 +1,8 @@
-from enum import IntEnum
 from typing import List
 
 from beanie import Document, Link
 
-
-class SiteType(IntEnum):
-    MANGALIB = 1
-    MANGA_OVH = 2
-    READMANGA = 3
+from enums import SiteType
 
 
 class Manga(Document):
@@ -21,3 +16,9 @@ class Manga(Document):
 class TelegramChat(Document):
     id: str
     subscriptions: List[Link[Manga]]
+
+    def has_subscription(self, manga: Manga) -> bool:
+        return bool(next((m for m in self.subscriptions if m.type == manga.type and m.urn == manga.urn), None))
+
+    def unsubscribe(self, manga: Manga):
+        self.subscriptions.remove(manga)

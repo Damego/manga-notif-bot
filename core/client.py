@@ -56,7 +56,7 @@ class Client:
             for conv in self._handlers
             if isinstance(conv, Conversation)
         ]
-        print(conversation_handlers[0].states["1"][0].callback)
+
         self.app.add_handlers(conversation_handlers)
 
     async def post_init(self, application: Application):

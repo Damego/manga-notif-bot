@@ -20,6 +20,7 @@ from handlers.conversation import Conversation
 from core import Client
 from manga.readmanga import ReadManga
 from database.models import TelegramChat, Manga, SiteType
+from consts import SITES
 
 load_dotenv()
 
@@ -129,6 +130,8 @@ async def process_search(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def on_title_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
     index = update.callback_query.data.removeprefix("search:")
     urn = context.user_data["manga_list"][index]
+    context.user_data.pop("manga_list")
+
     data = await read_manga.get_latest_chapter(urn)
 
     keyboard = [[InlineKeyboardButton("Подписаться", callback_data=f"sub:{index}")]]
@@ -154,8 +157,6 @@ async def on_title_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @conversation.state(SUBSCRIBE)
 @callback_query(re.compile("sub:"))
 async def subscribe(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # TODO: Проверить, если уже подписан
-    # TODO: Проверить, если манга уже есть в базе
     manga: Manga = context.user_data["manga"]
 
     db_manga = await Manga.find_one(
@@ -170,18 +171,24 @@ async def subscribe(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         manga = db_manga
 
-    user = await TelegramChat.find_one(TelegramChat.id == update.effective_chat.id)
-    if not user:
-        user = TelegramChat(id=update.effective_chat.id, subscriptions=[])
-        await user.create()
+    chat_id = str(update.effective_chat.id)
+    chat = await TelegramChat.find_one(TelegramChat.id == chat_id, fetch_links=True)
 
-    # noinspection PyTypeChecker
-    user.subscriptions.append(manga)
-    await user.save(link_rule=WriteRules.DO_NOTHING)
+    if not chat:
+        chat = TelegramChat(id=chat_id, subscriptions=[])
+        await chat.create()
 
     await update.effective_message.delete()
     await update.callback_query.answer()
-    await update.effective_chat.send_message(f"Вы успешно подписались на {manga.name}")
+
+    if chat.has_subscription(manga):
+        await update.effective_chat.send_message(f"Вы уже подписаны на этот тайтл")
+    else:
+        # noinspection PyTypeChecker
+        chat.subscriptions.append(manga)
+        await chat.save(link_rule=WriteRules.DO_NOTHING)
+
+        await update.effective_chat.send_message(f"Вы успешно подписались на {manga.name}")
 
     return conversation.States.END
 
@@ -194,8 +201,45 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return conversation.States.END
 
 
-# TODO: Просмотр подписок
-# TODO: Отписка
-# TODO: парсинг картинок
+@command(description="Просмотр ваших подписок")
+async def subscriptions(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat = await TelegramChat.find_one(TelegramChat.id == str(update.effective_chat.id), fetch_links=True)
+
+    if not chat or not chat.subscriptions:
+        await update.message.reply_text("У вас нет подписок")
+
+    text = ""
+    unsub_btns = []
+    i = -1
+    context.user_data["unsub_list"] = {}
+
+    for index, manga in enumerate(chat.subscriptions, start=0):
+        manga: Manga
+        text += f"{index + 1}. {manga.name} в {SITES[manga.type]}"
+        if index % 5 == 0:
+            unsub_btns.append([])
+            i += 1
+
+        unsub_btns[i].append(InlineKeyboardButton(str(index + 1), callback_data=f"unsub:{index}"))
+        context.user_data["unsub_list"][str(index)] = manga
+
+    await update.message.reply_text(text, reply_markup=InlineKeyboardMarkup(unsub_btns))
+
+
+@callback_query(re.compile("unsub:"))
+async def unsubscribe(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    index = update.callback_query.data.removeprefix("unsub:")
+    manga: Manga = context.user_data["unsub_list"][index]
+    context.user_data.pop("unsub_list")
+
+    await update.effective_message.delete()
+
+    chat = await TelegramChat.get(str(update.effective_chat.id), fetch_links=True)
+    chat.unsubscribe(manga)
+    await chat.save()
+
+    await update.callback_query.answer()
+    await update.effective_chat.send_message("Успешно отписано")
+
 
 client.run(environ["TELEGRAM_BOT_TOKEN"])
