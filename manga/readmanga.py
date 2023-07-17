@@ -52,5 +52,6 @@ class ReadManga:
 
         data = raw_data.text.strip().split()
         name = soup.find("h1", "names").find("span", "name").text
+        image_url = soup.find("div", "picture-fotorama").find("img").get("src")
 
-        return {"name": name, "volume": int(data[1]), "chapter": int(data[3])}
+        return {"name": name, "volume": int(data[1]), "chapter": int(data[3]), "image_url": image_url}

@@ -136,7 +136,7 @@ async def on_title_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.effective_message.delete()
     await update.callback_query.answer()
     await update.effective_chat.send_message(
-        f"{data['name']}\nПоследняя глава: {data['volume']}-{data['chapter']}",
+        f"{data['name']}\nПоследняя глава: {data['volume']}-{data['chapter']}\n{data['image_url']}",
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
