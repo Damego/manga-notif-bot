@@ -4,8 +4,8 @@ from telegram import BotCommand
 from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler
 from telegram.ext.filters import BaseFilter
 
-from handlers.base import HandlerObject
-from inner_types import AsyncCallable
+from .base import HandlerObject
+from ..inner_types import AsyncCallable
 
 
 class Command(HandlerObject):

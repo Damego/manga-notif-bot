@@ -1,4 +1,4 @@
-from inner_types import AsyncCallable
+from ..inner_types import AsyncCallable
 
 
 class HandlerObject:

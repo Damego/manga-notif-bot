@@ -15,9 +15,7 @@ from beanie import init_beanie, WriteRules
 from beanie.operators import And
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from handlers.decorators import callback_query, command, message, startup
-from handlers.conversation import Conversation
-from core import Client
+from ptb import Client, Conversation, callback_query, command, message, startup
 from manga.readmanga import ReadManga
 from database.models import TelegramChat, Manga, SiteType
 from consts import SITES

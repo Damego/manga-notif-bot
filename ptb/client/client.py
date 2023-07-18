@@ -5,11 +5,11 @@ import sys
 from telegram import Bot
 from telegram.ext import ApplicationBuilder, Application
 
-from handlers.handlers import Command, Startup
-from handlers.conversation import Conversation
-from handlers.base import HandlerObject
+from ..internal.handlers import Command, Startup
+from ..internal.conversation import Conversation
+from ..internal.base import HandlerObject
 
-__all__ = ("Client",)
+__all__ = ("Client", )
 
 
 class Client:

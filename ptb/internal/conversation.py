@@ -1,6 +1,8 @@
 from telegram.ext import ConversationHandler
 
-from handlers.base import HandlerObject
+from .base import HandlerObject
+
+__all__ = ("Conversation", )
 
 
 class Conversation:
