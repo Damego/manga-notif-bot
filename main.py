@@ -1,7 +1,8 @@
-from asyncio import create_task
+from asyncio import create_task, new_event_loop, set_event_loop
 import re
 from os import environ
 
+from apscheduler.schedulers.background import BackgroundScheduler
 from telegram import (
     KeyboardButton,
     ReplyKeyboardMarkup,
@@ -78,6 +79,7 @@ async def on_startup():
     )
     job = client.job_queue.run_repeating(fetch_data, interval=60 * 60)
     await job.run(client.app)
+
     print(f"{client.bot.username} started")
 
 

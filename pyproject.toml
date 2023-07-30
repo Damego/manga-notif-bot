@@ -12,6 +12,8 @@ python-telegram-bot = {extras = ["job-queue"], version = "^20.4"}
 python-dotenv = "^1.0.0"
 beautifulsoup4 = "^4.12.2"
 beanie = "^1.20.0"
+selenium = "^4.10.0"
+webdriver-manager = "^3.9.1"
 
 
 [build-system]
